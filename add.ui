@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(9,121,109,1), stop:1 rgba(0,255,185,1));</string>
+   <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(9,112,121,1), stop:1 rgba(60,147,59,1));</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
