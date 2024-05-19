@@ -1,4 +1,6 @@
 import sys
+
+import PySide6.QtWidgets
 from PySide6.QtWidgets import QApplication, QMainWindow
 from mainwindow import Ui_MainWindow
 from connection import Data
@@ -31,6 +33,7 @@ class Tracker(QMainWindow): #создание класса приложения 
         self.ui.lb_foodvalue.setText(self.connect.totalFood())
         self.ui.lb_entervalue.setText(self.connect.totalEnter())
         self.ui.lb_subscrvalue.setText(self.connect.totalSubs())
+        self.view_data()
 
     def openAddWindow(self):
         self.newWindow = QtWidgets.QDialog()
@@ -53,10 +56,34 @@ class Tracker(QMainWindow): #создание класса приложения 
             balance = "-"+self.uiNewWindow.le_balance.text()
         else:
             balance = self.uiNewWindow.le_balance.text()
-        self.connect.addQuery(date, cat, descr, balance, status)
-        self.newWindow.close()
-        self.view_data()
-        self.refresh()
+
+        # if balance == "" or balance == "-":
+        #     error = QtWidgets.QMessageBox()
+        #     error.setWindowTitle("Ошибка ввода")
+        #     error.setStyleSheet(
+        #         "QMessageBox{background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(9,112,121,1), stop:1 rgba(60,147,59,1))}")
+        #     error.setText("Введите сумму операции")
+        #     error.show()
+        #     error.exec()
+        #     # QtWidgets.QMessageBox.setStyleSheet("QMessageBox{background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(9,112,121,1), stop:1 rgba(60,147,59,1))}")
+        #     # QtWidgets.QMessageBox.critical(None, "Ошибка ввода",
+        #     #                    "Введите сумму", QtWidgets.QMessageBox.Ok)
+
+        if balance == "" or balance == "-":
+            error = QtWidgets.QMessageBox()
+            error.setWindowTitle("Ошибка ввода")
+            error.setStyleSheet(
+                "QMessageBox{background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(9,112,121,1), stop:1 rgba(60,147,59,1))}")
+            error.setText("Введите сумму операции")
+            error.show()
+            error.exec()
+        else:
+            self.connect.addQuery(date, cat, descr, balance, status)
+            self.view_data()
+            self.refresh()
+            self.newWindow.close()
+
+
     def edit(self):
         index = self.ui.tableView.selectedIndexes()[0]
         id = str(self.ui.tableView.model().data(index))
@@ -67,16 +94,26 @@ class Tracker(QMainWindow): #создание класса приложения 
         balance = self.uiNewWindow.le_balance.text()
         status = self.uiNewWindow.le_type.currentText()
 
-        self.connect.updateQuery(date, cat, descr, balance, status, id)
-        self.newWindow.close()
-        self.view_data()
-        self.refresh()
+        if balance == "" or balance == "-":
+            error = QtWidgets.QMessageBox()
+            error.setWindowTitle("Ошибка ввода")
+            error.setStyleSheet(
+                "QMessageBox{background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(9,112,121,1), stop:1 rgba(60,147,59,1))}")
+            error.setText("Введите сумму операции")
+            error.show()
+            error.exec()
+        else:
+            self.connect.updateQuery(date, cat, descr, balance, status, id)
+            self.newWindow.close()
+            self.view_data()
+            self.refresh()
+
+
     def delete(self):
         index = self.ui.tableView.selectedIndexes()[0]
         id = str(self.ui.tableView.model().data(index))
 
         self.connect.deleteQuery(id)
-        self.newWindow.close()
         self.view_data()
         self.refresh()
 
@@ -86,5 +123,3 @@ if __name__ == "__main__": #определение точки входа в пр
     window = Tracker()
     window.show() #отображение окна программы
     sys.exit(app.exec()) #закрытие по окончании цикла событий в приложении
-
-

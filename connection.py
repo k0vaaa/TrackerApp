@@ -7,15 +7,14 @@ class Data:
 
     def createConnection(self):
         db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
-        # db.databaseName()
+        db.setDatabaseName('db.db')
 
         if not db.open():
             QtWidgets.QMessageBox.critical(None,"Не удается установить соединение с базой данных.",QtWidgets.QMessageBox.Cancel)
             return False
 
         query = QtSql.QSqlQuery()
-        query.exec("CREATE TABLE IF NOT EXISTS data (ID integer primary key AUTOINCREMENT, Date VARCHAR(20),"
-                   "Category VARCHAR(20), Description VARCHAR(20), Balance MONEY, Status VARCHAR(20))")
+        query.exec("CREATE TABLE IF NOT EXISTS data (ID integer primary key AUTOINCREMENT, Date VARCHAR(20), Category VARCHAR(20), Description VARCHAR(20), Balance REAL, Status VARCHAR(20))")
         return True
 
     def executeQueryWithParams(self, sql_query, query_values = None):
@@ -27,7 +26,9 @@ class Data:
                 query.addBindValue(query_value)
 
         query.exec()
+
         return query
+
     def addQuery(self, date, category, description, balance, status):
         sql_query = "INSERT INTO data (Date, Category, Description, Balance, Status) VALUES (?,?,?,?,?)"
         self.executeQueryWithParams(sql_query,[date,category,description, balance,status])
@@ -37,8 +38,9 @@ class Data:
         self.executeQueryWithParams(sql_query,[date,category,description, balance,status,id])
 
     def deleteQuery(self,id):
-        sql_query = "DELETE * FROM data  WHERE ID=?"
+        sql_query = "DELETE FROM data  WHERE ID=?"
         self.executeQueryWithParams(sql_query,[id])
+        print("Deleted"+id)
 
     # def getTotal(self, column, filter = None, value = None):
     #     sql_query= f"SELECT SUM({column}) FROM data"
@@ -68,8 +70,7 @@ class Data:
 
         # Выполнение запроса
         query = self.executeQueryWithParams(sql_query, query_values)
-
-        # Проверка и возврат результата
+        
         if query.next():
             # if fortotal != None:
 
