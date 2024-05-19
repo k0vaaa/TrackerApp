@@ -51,11 +51,12 @@ class Tracker(QMainWindow): #создание класса приложения 
         cat = self.uiNewWindow.cb_categories.currentText()
         descr = self.uiNewWindow.le_descr.text()
         status = self.uiNewWindow.le_type.currentText()
-        balance = ""
-        if status == "Списание":
-            balance = "-"+self.uiNewWindow.le_balance.text()
-        else:
-            balance = self.uiNewWindow.le_balance.text()
+        balance = self.uiNewWindow.le_balance.text()
+        # balance = ""
+        # if status == "Списание":
+        #     balance = "-"+self.uiNewWindow.le_balance.text()
+        # else:
+        #     balance = self.uiNewWindow.le_balance.text()
 
         # if balance == "" or balance == "-":
         #     error = QtWidgets.QMessageBox()

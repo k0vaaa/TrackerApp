@@ -31,7 +31,7 @@ class Data:
 
     def addQuery(self, date, category, description, balance, status):
         sql_query = "INSERT INTO data (Date, Category, Description, Balance, Status) VALUES (?,?,?,?,?)"
-        self.executeQueryWithParams(sql_query,[date,category,description, balance,status])
+        self.executeQueryWithParams(sql_query,[date,category,description,balance,status])
 
     def updateQuery(self, date, category, description, balance, status, id):
         sql_query = "UPDATE data SET Date=?, Category=?, Description=?, Balance=?, Status=? WHERE ID=?"
@@ -40,7 +40,6 @@ class Data:
     def deleteQuery(self,id):
         sql_query = "DELETE FROM data  WHERE ID=?"
         self.executeQueryWithParams(sql_query,[id])
-        print("Deleted"+id)
 
     # def getTotal(self, column, filter = None, value = None):
     #     sql_query= f"SELECT SUM({column}) FROM data"
@@ -58,12 +57,22 @@ class Data:
     #         return str(query.value(0)) + " ₽"
     #     return '0 ₽'
 
-    def getTotal(self, column, filter=None, value=None, fortotal = None):
+    def getTotal(self, column, filter=None, value=None, case_when = None):
         # Инициализация SQL запроса
-        sql_query = f"SELECT SUM({column}) FROM data"
+        if case_when:
+            sql_query = f"SELECT SUM(CASE WHEN {case_when['filter']} = '{case_when['value1']}' THEN {column} ELSE 0 END) - SUM(CASE WHEN {case_when['filter']} = '{case_when['value2']}' THEN {column} ELSE 0 END) AS total_balance FROM data"
+        else:
+            sql_query = f"SELECT SUM({column}) FROM data"
+
         query_values = []
 
-        # Добавление условия фильтрации, если задано
+        # if filter and value is not None and not case_when:
+        #     sql_query += f" WHERE {filter} = ?"
+        #     query_values.append(value)
+        # elif filter and value is not None and case_when:
+        #     sql_query += f" WHERE {filter} = ?"
+        #     query_values.append(value)
+
         if filter and value is not None:
             sql_query += f" WHERE {filter} = ?"
             query_values.append(value)
@@ -72,13 +81,13 @@ class Data:
         query = self.executeQueryWithParams(sql_query, query_values)
         
         if query.next():
-            # if fortotal != None:
-
             return str(query.value(0)) + " ₽"
         return '0 ₽'
 
+
+
     def totalBalance(self):
-        return self.getTotal(column="Balance")
+        return self.getTotal(column="Balance", case_when={"filter": "Status", "value1": "Поступление", "value2": "Списание"})
 
     def totalIncome(self):
         return self.getTotal(column="Balance",filter="Status", value="Поступление")
@@ -87,7 +96,7 @@ class Data:
         return self.getTotal(column="Balance",filter="Status", value="Списание")
 
     def totalFood(self):
-        return self.getTotal(column="Balance",filter="Category", value="Еда")
+        return self.getTotal(column="Balance",filter="Category", value="Еда", case_when={"filter": "Status", "value1": "Поступление", "value2": "Списание"})
 
     def totalEnter(self):
         return self.getTotal(column="Balance",filter="Category", value="Развлечения")
