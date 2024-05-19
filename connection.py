@@ -41,21 +41,10 @@ class Data:
         sql_query = "DELETE FROM data  WHERE ID=?"
         self.executeQueryWithParams(sql_query,[id])
 
-    # def getTotal(self, column, filter = None, value = None):
-    #     sql_query= f"SELECT SUM({column}) FROM data"
-    #     if filter is not None and value is not None:
-    #         sql_query += f"WHERE {filter} = ?"
-    #
-    #     query_values = []
-    #
-    #     if value is not None:
-    #         query_values.append(value)
-    #
-    #     query = self.executeQueryWithParams(sql_query, query_values)
-    #
-    #     if query.next():
-    #         return str(query.value(0)) + " ₽"
-    #     return '0 ₽'
+    # def selectQuery(self,id):
+    #     sql_query = "SELECT * FROM data WHERE ID=?"
+    #     self.executeQueryWithParams(sql_query, [id])
+
 
     def getTotal(self, column, filter=None, value=None, case_when = None):
         # Инициализация SQL запроса
@@ -65,13 +54,6 @@ class Data:
             sql_query = f"SELECT SUM({column}) FROM data"
 
         query_values = []
-
-        # if filter and value is not None and not case_when:
-        #     sql_query += f" WHERE {filter} = ?"
-        #     query_values.append(value)
-        # elif filter and value is not None and case_when:
-        #     sql_query += f" WHERE {filter} = ?"
-        #     query_values.append(value)
 
         if filter and value is not None:
             sql_query += f" WHERE {filter} = ?"
@@ -83,8 +65,6 @@ class Data:
         if query.next():
             return str(query.value(0)) + " ₽"
         return '0 ₽'
-
-
 
     def totalBalance(self):
         return self.getTotal(column="Balance", case_when={"filter": "Status", "value1": "Поступление", "value2": "Списание"})
@@ -99,7 +79,8 @@ class Data:
         return self.getTotal(column="Balance",filter="Category", value="Еда", case_when={"filter": "Status", "value1": "Поступление", "value2": "Списание"})
 
     def totalEnter(self):
-        return self.getTotal(column="Balance",filter="Category", value="Развлечения")
+        return self.getTotal(column="Balance",filter="Category", value="Развлечения", case_when={"filter": "Status", "value1": "Поступление", "value2": "Списание"})
 
     def totalSubs(self):
-        return self.getTotal(column="Balance",filter="Category", value="Подписки")
+        return self.getTotal(column="Balance",filter="Category", value="Подписки", case_when={"filter": "Status", "value1": "Поступление", "value2": "Списание"})
+
